@@ -42,8 +42,9 @@ RUN chmod +x /root/abevjava.sh
 # Set workdir to home on startup
 WORKDIR /root
 
-CMD echo '************* NOTE *************' && \
-    echo 'Run `./install.sh` to install the ÁNYK.' && \
+CMD ./install.sh && \
+    echo '************* NOTE *************' && \
+    echo 'Run `./install.sh` to run the installer again, if needed.' && \
     echo 'Do **NOT** change the default install or user data location.' && \
     echo '' && \
     echo 'Run `./abevjava.sh` in order to start the ÁNYK once installed.' && \
