@@ -1,4 +1,5 @@
-FROM ubuntu:20.04
+FROM --platform=linux/amd64 ubuntu:20.04
+#FROM ubuntu:20.04
 
 # Expose ports to taste
 # EXPOSE 80 8000 8080 443 5432 27017
