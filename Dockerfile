@@ -3,6 +3,9 @@ FROM --platform=linux/amd64 ubuntu:20.04
 # Expose ports to taste
 # EXPOSE 80 8000 8080 443 5432 27017
 
+# Fix Quartz on macOS on Apple Silicon (M1/M2/M3)
+ENV _JAVA_OPTIONS="-Dsun.java2d.xrender=false"
+
 # Make sure we have the necessary command line tools
 # as well as some libraries that are mysteriously needed
 # in order for OpenJDK to work.
