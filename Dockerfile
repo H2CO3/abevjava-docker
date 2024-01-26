@@ -25,6 +25,7 @@ WORKDIR /root/utils
 # Also download ÁNYK/ABEVJAVA installer.
 RUN curl -o openjdk-10.0.2_linux-x64_bin.tar.gz 'https://download.java.net/java/GA/jdk10/10.0.2/19aef61b38124481863b1413dce1855f/13/openjdk-10.0.2_linux-x64_bin.tar.gz'
 RUN curl -o abevjava_install.jar 'https://nav.gov.hu/pfile/programFile?path=/nyomtatvanyok/letoltesek/nyomtatvanykitolto_programok/nyomtatvany_apeh/keretprogramok/AbevJava'
+RUN curl -o igazol.jar 'https://nav.gov.hu/pfile/programFile?path=/nyomtatvanyok/letoltesek/nyomtatvanykitolto_programok/nyomtatvanykitolto_programok_nav/igazol/NAV_igazol'
 RUN tar -xf openjdk-10.0.2_linux-x64_bin.tar.gz
 ENV PATH "$PATH:/root/utils/jdk-10.0.2/bin"
 
