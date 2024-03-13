@@ -1,21 +1,13 @@
 #!/bin/sh
 
-USERDATADIR=$1
+set -eu
 
-if [ "x$USERDATADIR" = "x" ]; then
-    echo "Please specify the user data directory as an argument to this script.";
-    exit 1;
-fi
+USERDATADIR="$1"
+COMMITHASH=$(git rev-parse --short=8 HEAD)
 
 # create `eKuldes` directory too, so that the installer doesn't ask to create it
 mkdir -p $USERDATADIR/eKuldes
+
 xhost + # allow all connections
-
-if [ "x$(uname)" = "xLinux" ]; then
-    echo '`docker run` needs `sudo`' # not on macOS, though
-    sudo docker run -e DISPLAY="$DISPLAY" -v /tmp/.X11-unix:/tmp/.X11-unix -v $USERDATADIR:/root/abevjava --rm -it abevjava
-else
-    docker run -e DISPLAY=host.docker.internal:0 -v /tmp/.X11-unix:/tmp/.X11-unix -v $USERDATADIR:/root/abevjava --rm -it abevjava
-fi
-
+docker run --rm -it -e DISPLAY=host.docker.internal:0 -v /tmp/.X11-unix:/tmp/.X11-unix -v "$USERDATADIR:/root/abevjava" "abevjava:$COMMITHASH"
 xhost - # disallow connections again, for security. TODO: do this better.

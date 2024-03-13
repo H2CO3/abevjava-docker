@@ -1,35 +1,41 @@
-FROM --platform=linux/amd64 ubuntu:20.04
-
-# Expose ports to taste
-# EXPOSE 80 8000 8080 443 5432 27017
-
-# Fix Quartz on macOS on Apple Silicon (M1/M2/M3)
-ENV _JAVA_OPTIONS="-Dsun.java2d.xrender=false"
+FROM debian:12.5-slim
 
 # Make sure we have the necessary command line tools
 # as well as some libraries that are mysteriously needed
 # in order for OpenJDK to work.
-RUN DEBIAN_FRONTEND=noninteractive apt -y update && \
-    DEBIAN_FRONTEND=noninteractive apt -y upgrade && \
-    DEBIAN_FRONTEND=noninteractive apt -y install python3 python3-pip zlib1g-dev \
-                                                  build-essential make pkg-config \
-                                                  autoconf automake m4 \
-                                                  git curl wget \
-                                                  libxext6 libxrender1 libxtst6 libxi6 \
-                                                  libfreetype6 fontconfig \
-                                                  vim
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt -y update
+RUN apt -y upgrade
+RUN apt -y install zlib1g-dev \
+    build-essential make pkg-config \
+    autoconf automake m4 \
+    curl wget \
+    libxext6 libxrender1 libxtst6 libxi6 \
+    libfreetype6 fontconfig
 
 # We download all the required dependencies here.
 RUN mkdir -p /root/utils
 WORKDIR /root/utils
 
-# Download and unpack OpenJDK and add it to PATH.
-# Also download ÁNYK/ABEVJAVA installer.
-RUN curl -o openjdk-10.0.2_linux-x64_bin.tar.gz 'https://download.java.net/java/GA/jdk10/10.0.2/19aef61b38124481863b1413dce1855f/13/openjdk-10.0.2_linux-x64_bin.tar.gz'
-RUN curl -o abevjava_install.jar 'https://nav.gov.hu/pfile/programFile?path=/nyomtatvanyok/letoltesek/nyomtatvanykitolto_programok/nyomtatvany_apeh/keretprogramok/AbevJava'
-RUN curl -o igazol.jar 'https://nav.gov.hu/pfile/programFile?path=/nyomtatvanyok/letoltesek/nyomtatvanykitolto_programok/nyomtatvanykitolto_programok_nav/igazol/NAV_igazol'
-RUN tar -xf openjdk-10.0.2_linux-x64_bin.tar.gz
-ENV PATH "$PATH:/root/utils/jdk-10.0.2/bin"
+# Unpack OpenJDK runtime for correct CPU architecture and add it to PATH.
+# Delete the archive files to save space in the Docker image
+COPY jre jre
+ARG TARGETARCH
+RUN mkdir -p OpenJDK8U
+RUN \
+    if [ $TARGETARCH = "arm64" -o $TARGETARCH = "aarch64" ]; then \
+        JDKARCH='aarch64'; \
+    elif [ $TARGETARCH = "arm" -o $TARGETARCH = "armhf" -o $TARGETARCH = "armel" ]; then \
+        JDKARCH='arm'; \
+    else \
+        JDKARCH='x64'; \
+    fi; \
+    tar -C OpenJDK8U --strip-components=1 -xf "jre/OpenJDK8U-jre_${JDKARCH}_linux_hotspot_8u402b06.tar.gz"
+RUN rm -rf jre
+ENV PATH "$PATH:/root/utils/OpenJDK8U/bin"
+
+# Copy over the ÁNYK/ABEVJAVA installer and form/document plug-in installers.
+COPY jars jars
 
 # Create install directory and user data volume.
 # (The former makes `abevjava_install.jar` not ask about creating them,
@@ -46,12 +52,19 @@ RUN chmod +x /root/abevjava.sh
 # Set workdir to home on startup
 WORKDIR /root
 
+# Fix Quartz on macOS on Apple Silicon (M1/M2/M3)
+ENV _JAVA_OPTIONS="-Dsun.java2d.xrender=false"
+
+# Expose ports to taste
+# EXPOSE 80 8000 8080 443 5432 27017
+
 CMD ./install.sh && \
     echo '************* NOTE *************' && \
     echo 'Run `./install.sh` to run the installer again, if needed.' && \
     echo 'Do **NOT** change the default install or user data location.' && \
     echo '' && \
-    echo 'Run `./abevjava.sh` in order to start the ÁNYK once installed.' && \
+    echo 'ÁNYK starts automatically after installation.' && \
+    echo 'Run `./abevjava.sh` to restart it.' && \
     echo 'Have fun! <3' && \
     echo '********************************' && \
-    /bin/bash
+    /root/abevjava.sh

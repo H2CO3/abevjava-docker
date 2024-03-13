@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ "x$(uname)" = "xLinux" ]; then
-    echo '`docker build` needs `sudo`' # not on macOS, though
-    sudo docker build -t abevjava -f Dockerfile .
-else
-    docker build -t abevjava -f Dockerfile .
-fi
+set -eu
+
+BUILDCTX="$1"
+COMMITHASH=$(git rev-parse --short=8 HEAD)
+
+docker build -t "abevjava:$COMMITHASH" -f Dockerfile "$BUILDCTX"
