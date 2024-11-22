@@ -32,7 +32,7 @@ RUN \
     fi; \
     tar -C OpenJDK8U --strip-components=1 -xf "jre/OpenJDK8U-jre_${JDKARCH}_linux_hotspot_8u402b06.tar.gz"
 RUN rm -rf jre
-ENV PATH "$PATH:/root/utils/OpenJDK8U/bin"
+ENV PATH="$PATH:/root/utils/OpenJDK8U/bin"
 
 # Copy over the ÁNYK/ABEVJAVA installer and form/document plug-in installers.
 COPY jars jars
