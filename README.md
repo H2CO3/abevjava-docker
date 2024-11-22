@@ -12,3 +12,8 @@ Comes with the IGAZOL (by NAV) template.
 4. Run the image using the provided convenience script: `./run-abevjava-docker.sh /path/to/userdata` - this will mount the `/path/to/userdata` directory under `/root/abevjava` in the running container.
 5. The installers will run automatically. You need to re-install the program every time you launch the container, because the install directory is not mounted as a volume. **Do NOT change the default locations** offered by the installer.
 6. Once the software is installed, use the `./abevjava.sh` script to launch it.
+
+## Support for Multiple Templates
+
+This repository comes with the IGAZOL template.
+If you want to open other templates (NAV_24T101 or such), download the necessary `.jar` file and put it in the `jars` directory. All the templates in the folder will be installed upon running `./run-abevjava-docker.sh`.
