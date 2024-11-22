@@ -15,5 +15,5 @@ Comes with the IGAZOL (by NAV) template.
 
 ## Support for Multiple Templates
 
-This repository comes with the IGAZOL template.
-If you want to open other templates (NAV_24T101 or such), download the necessary `.jar` file and put it in the `jars` directory. All the templates in the folder will be installed upon running `./run-abevjava-docker.sh`.
+This repository comes with the `IGAZOL` template.
+If you want to open other templates (`NAV_24T101` or such), download the necessary `.jar` file and put it in the `jars` directory. All the templates in the folder will be installed upon running `./run-abevjava-docker.sh`.
